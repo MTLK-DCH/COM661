@@ -22,7 +22,7 @@
 
 ##############################################
 
-# test = "This is a simple string to practice on"
+test = "This is a simple string to practice on"
 
 # print(len(test))
 # print(test.count('s'))
@@ -30,7 +30,7 @@
 # test = test.replace("string", "charactor sequence")
 # print(test)
 # print(test[10:16])
-# print(test.find('a'))
+print(test.find('a'))
 # print(test.find('a', 10))
 
 
@@ -57,16 +57,16 @@
 
 ###########################################
 
-print("querty123".isalnum())
-print("querty'#123".isalnum())
-print("letters".isalpha())
-print("letters123".isalpha())
-print("let ters".isalpha())
-print("12345".isdigit())
-print("12345abc".isdigit())
-print("     ".isspace())
-print("a     b".isspace())
-print("A string".ljust(15))
-print("A string".rjust(15))
-print("A string".center(15))
-print("A string".center(15).strip())
+# print("querty123".isalnum())
+# print("querty'#123".isalnum())
+# print("letters".isalpha())
+# print("letters123".isalpha())
+# print("let ters".isalpha())
+# print("12345".isdigit())
+# print("12345abc".isdigit())
+# print("     ".isspace())
+# print("a     b".isspace())
+# print("A string".ljust(15))
+# print("A string".rjust(15))
+# print("A string".center(15))
+# print("A string".center(15).strip())
