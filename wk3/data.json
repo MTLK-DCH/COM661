@@ -1,0 +1,46 @@
+{
+    "coord": {
+        "lon": -6.6753,
+        "lat": 55.1479
+    },
+    "weather": [
+        {
+            "id": 803,
+            "main": "Clouds",
+            "description": "broken clouds",
+            "icon": "04d"
+        }
+    ],
+    "base": "stations",
+    "main": {
+        "temp": 11.93,
+        "feels_like": 10.85,
+        "temp_min": 11.93,
+        "temp_max": 11.93,
+        "pressure": 1019,
+        "humidity": 64,
+        "sea_level": 1019,
+        "grnd_level": 1017
+    },
+    "visibility": 10000,
+    "wind": {
+        "speed": 8.72,
+        "deg": 295,
+        "gust": 11.37
+    },
+    "clouds": {
+        "all": 64
+    },
+    "dt": 1665396348,
+    "sys": {
+        "type": 1,
+        "id": 1374,
+        "country": "GB",
+        "sunrise": 1665384365,
+        "sunset": 1665423665
+    },
+    "timezone": 3600,
+    "id": 2652586,
+    "name": "Coleraine",
+    "cod": 200
+}
