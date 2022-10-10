@@ -11,3 +11,4 @@ def win(name):
                     newfile.write(l)
                 else:
                     newl = pl_name + " " + str(int(l.split()[0]) + 1)
+                    pass
