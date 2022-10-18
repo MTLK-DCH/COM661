@@ -109,7 +109,44 @@ def add_new_review(b_id):
             business['reviews'].append(new_review)
             break
     return make_response(jsonify(new_review), 201)
+
+# fetch one review
+@app.route("/api/v1.0/businesses/<int:b_id>/reviews/<int:r_id>", methods=['GET'])
+def fetch_one_review(b_id, r_id):
+    for business in businesses:
+        if business['id'] == b_id:
+            for review in business['reviews']:
+                if review['id'] == r_id:
+                    return make_response(jsonify(review), 200)
+            return make_response('review id error', 404)
+        else:
+            return make_response('business id error', 404)
     
+# edit a review
+@app.route("/api/v1.0/businesses/<int:b_id>/reviews/<int:r_id>", methods=['PUT'])
+def edit_one_review(b_id, r_id):
+    for business in businesses:
+        if business['id'] == b_id:
+            for review in business['reviews']:
+                if review['id'] == r_id:
+                    review['comment'] = request.form['new_comment']
+                    return make_response(jsonify(review), 200)
+            return make_response('review id error', 404)
+        else:
+            return make_response('business id error', 404)
+
+# delete a review
+@app.route("/api/v1.0/businesses/<int:b_id>/reviews/<int:r_id>", methods=['DELETE'])
+def delete_one_review(b_id, r_id):
+    for business in businesses:
+        if business['id'] == b_id:
+            for review in business['reviews']:
+                if review['id'] == r_id:
+                    business['reviews'].remove(review)
+                    return make_response({}, 200)
+            return make_response('review id error', 404)
+        else:
+            return make_response('business id error', 404)
 
 if __name__ == "__main__":
     app.run(debug=True)
