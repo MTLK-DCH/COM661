@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, make_response, request
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '123456'
 
 businesses = [
     {
@@ -55,8 +56,19 @@ def add_business():
         "rating": request.form["rating"], 
         "reviews": []
     }
+    print(new_business)
     businesses.append(new_business)
     return make_response(jsonify(new_business), 201)
+
+@app.route("/api/v1.0/businesses/<int:id>", methods=["PUT"])
+def edit_business(id):
+    for business in businesses:
+        if business['id'] == id:
+            business["name"]: request.form["name"]
+            business["town"]: request.form["town"]
+            business["rating"]: request.form["rating"]
+            break
+    return make_response(jsonify(business), 200)
 
 if __name__ == "__main__":
     app.run(debug=True)
