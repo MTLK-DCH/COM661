@@ -34,29 +34,41 @@ def show_one_business(id):
 
 @app.route("/api/v1.0/businesses", methods=["POST"])
 def add_business():
-    next_id = uuid.uuid1()
-    new_business = {
-        "name": request.form["name"],
-        "town": request.form["town"],
-        "rating": request.form["rating"],
-        "reviews": []
-    }
-    print(new_business)
-    businesses[next_id] = new_business
-    return make_response(jsonify(new_business), 201)
+    if 'name' in request.form \
+        and 'town' in request.form \
+        and 'rating' in request.form:
+        next_id = uuid.uuid1()
+        new_business = {
+            "name": request.form["name"],
+            "town": request.form["town"],
+            "rating": request.form["rating"],
+            "reviews": []
+        }
+        print(new_business)
+        businesses[next_id] = new_business
+        return make_response(jsonify(new_business), 201)
+    else:
+        return make_response(jsonify({"Error": "Missing form data"}), 404)
 
 # edit the business by id
 
 
 @app.route("/api/v1.0/businesses/<string:id>", methods=["PUT"])
 def edit_business(id):
-    print(request.form)
-    business = businesses[id]
-    print('editting')
-    business["name"] = request.form["name"]
-    business["town"] = request.form["town"]
-    business["rating"] = request.form["rating"]
-    return make_response(jsonify(business), 200)
+    if id in businesses:
+        if 'name' in request.form \
+            and 'town' in request.form \
+            and 'rating' in request.form:
+            business = businesses[id]
+            print('editting')
+            business["name"] = request.form["name"]
+            business["town"] = request.form["town"]
+            business["rating"] = request.form["rating"]
+            return make_response(jsonify(business), 200)
+        else:
+            return make_response(jsonify({"Error": "Missing form data"}), 404)
+    else:
+        return make_response(jsonify({"Error": "Invalide business id"}), 404)
 
 # delete a business by id
 
