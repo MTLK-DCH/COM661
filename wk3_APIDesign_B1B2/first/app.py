@@ -84,13 +84,32 @@ def delete_business(id):
     return make_response(jsonify({}), 200)
 
 # sub-document collection (reviews) by id
-@app.route("/api/v1.0/businesses/<int:id>.review", methods=["GET"])
+@app.route("/api/v1.0/businesses/<int:id>/reviews", methods=["GET"])
 def fetch_all_reviews(id):
     for business in businesses:
         if business['id'] == id:
             break
-
     return make_response(jsonify(business['reviews']), 200)
+
+# create review
+@app.route("/api/v1.0/businesses/<int:b_id>/reviews", methods=['POST'])
+def add_new_review(b_id):
+    for business in businesses:
+        if business['id'] == b_id:
+            if len(business['reviews']) == 0:
+                new_review_id = 1
+            else:
+                new_review = business['reviews'][-1]['id'] + 1
+            new_review = {
+                'id':new_review_id, 
+                'username': request.form['username'],
+                'comment': request.form['comment'],
+                'stars': request.form['stars']
+            }
+            business['reviews'].append(new_review)
+            break
+    return make_response(jsonify(new_review), 201)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)

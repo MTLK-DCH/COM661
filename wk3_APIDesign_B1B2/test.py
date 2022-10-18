@@ -1,3 +1,1 @@
-for i in range(10):
-    pass
-print(i)
+print(-1 == True)
