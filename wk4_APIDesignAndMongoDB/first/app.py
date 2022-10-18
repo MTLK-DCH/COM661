@@ -36,14 +36,13 @@ def show_one_business(id):
 def add_business():
     next_id = uuid.uuid1()
     new_business = {
-        "id": next_id,
         "name": request.form["name"],
         "town": request.form["town"],
         "rating": request.form["rating"],
         "reviews": []
     }
     print(new_business)
-    businesses.append(new_business)
+    businesses[next_id] = new_business
     return make_response(jsonify(new_business), 201)
 
 # edit the business by id
@@ -79,66 +78,66 @@ def fetch_all_reviews(id):
 
 @app.route("/api/v1.0/businesses/<string:b_id>/reviews", methods=['POST'])
 def add_new_review(b_id):
-    for business in businesses:
-        if business['id'] == b_id:
-            if len(business['reviews']) == 0:
-                new_review_id = 1
-            else:
-                new_review = business['reviews'][-1]['id'] + 1
-            new_review = {
-                'id': new_review_id,
-                'username': request.form['username'],
-                'comment': request.form['comment'],
-                'stars': request.form['stars']
-            }
-            business['reviews'].append(new_review)
-            break
-    return make_response(jsonify(new_review), 201)
+    if b_id in businesses:
+        business = businesses[b_id]
+        if len(business['reviews']) == 0:
+                    new_review_id = 1
+        else:
+            new_review = business['reviews'][-1]['id'] + 1
+        new_review = {
+            'id': new_review_id,
+            'username': request.form['username'],
+            'comment': request.form['comment'],
+            'stars': request.form['stars']
+        }
+        business['reviews'].append(new_review)
+        return make_response(jsonify(new_review), 201)
+    else:
+        return make_response('businessID error', 404)
 
 # fetch one review
 
 
 @app.route("/api/v1.0/businesses/<string:b_id>/reviews/<int:r_id>", methods=['GET'])
 def fetch_one_review(b_id, r_id):
-    for business in businesses:
-        if business['id'] == b_id:
-            for review in business['reviews']:
-                if review['id'] == r_id:
-                    return make_response(jsonify(review), 200)
-            return make_response('review id error', 404)
-        else:
-            return make_response('business id error', 404)
+    if b_id in businesses:
+        business = businesses[b_id]
+        for review in business['reviews']:
+            if review['id'] == r_id:
+                return make_response(jsonify(review), 200)
+        return make_response('review id error', 404)
+    else:
+        return make_response('business id error', 404)
 
 # edit a review
 
 
 @app.route("/api/v1.0/businesses/<string:b_id>/reviews/<int:r_id>", methods=['PUT'])
 def edit_one_review(b_id, r_id):
-    for business in businesses:
-        if business['id'] == b_id:
-            for review in business['reviews']:
-                if review['id'] == r_id:
-                    review['comment'] = request.form['new_comment']
-                    return make_response(jsonify(review), 200)
-            return make_response('review id error', 404)
-        else:
-            return make_response('business id error', 404)
+    if b_id in businesses:
+        business = businesses[b_id]
+        for review in business['reviews']:
+            if review['id'] == r_id:
+                review['comment'] = request.form['new_comment']
+                return make_response(jsonify(review), 200)
+        return make_response('review id error', 404)
+    else:
+        return make_response('business id error', 404)
 
 # delete a review
 
 
 @app.route("/api/v1.0/businesses/<string:b_id>/reviews/<int:r_id>", methods=['DELETE'])
 def delete_one_review(b_id, r_id):
-    for business in businesses:
-        if business['id'] == b_id:
-            for review in business['reviews']:
-                if review['id'] == r_id:
-                    business['reviews'].remove(review)
-                    return make_response({}, 200)
-            return make_response('review id error', 404)
-        else:
-            return make_response('business id error', 404)
-
+    if b_id in businesses:
+        business = businesses[b_id]
+        for review in business['reviews']:
+            if review['id'] == r_id:
+                business['reviews'].remove(review)
+                return make_response(jsonify({}), 200)
+        return make_response('review id error', 404)
+    else:
+        return make_response('business id error', 404)
 
 if __name__ == "__main__":
     businesses = MyUtils.utils.generate_dummy_daty(100)

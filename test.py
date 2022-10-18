@@ -11,4 +11,4 @@ dics = {
 
 dict = dics['111']
 dict['id'] = '333'
-print(dics)
+print('111' in dics)
