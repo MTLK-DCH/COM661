@@ -50,9 +50,9 @@ def add_business():
     form["rating"] = "town"
     new_business = {
         "id": next_id, 
-        "name": form["name"], 
-        "town": form["town"],
-        "rating": form["rating"], 
+        "name": request.form["name"], 
+        "town": request.form["town"],
+        "rating": request.form["rating"], 
         "reviews": []
     }
     businesses.append(new_business)
