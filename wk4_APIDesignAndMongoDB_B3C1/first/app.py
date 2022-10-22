@@ -15,12 +15,20 @@ businesses = {}
 def index():
     return make_response("<h1>Hello world</h1>", 200)
 
-# get all of the businesses
+# get all of the businesses but diviced into pages
 
 
 @app.route("/api/v1.0/businesses", methods=["GET"])
 def show_all_businesses():
-    return make_response(jsonify(businesses), 200)
+    page_num, page_size = 1, 10
+    if request.args.get('pn'):
+        page_num = int(request.args.get('pn'))
+    if request.args.get('ps'):
+        page_size = int(request.args.get('ps'))
+    page_start = (page_num - 1) * page_size
+    businessList = [{k: v} for k, v in businesses.items()]
+    list2return = businessList[page_start: page_start + page_size]
+    return make_response(jsonify(list2return), 200)
 
 # get one business by id
 
@@ -35,8 +43,8 @@ def show_one_business(id):
 @app.route("/api/v1.0/businesses", methods=["POST"])
 def add_business():
     if 'name' in request.form \
-        and 'town' in request.form \
-        and 'rating' in request.form:
+            and 'town' in request.form \
+            and 'rating' in request.form:
         next_id = uuid.uuid1()
         new_business = {
             "name": request.form["name"],
@@ -57,8 +65,8 @@ def add_business():
 def edit_business(id):
     if id in businesses:
         if 'name' in request.form \
-            and 'town' in request.form \
-            and 'rating' in request.form:
+                and 'town' in request.form \
+                and 'rating' in request.form:
             business = businesses[id]
             print('editting')
             business["name"] = request.form["name"]
@@ -81,16 +89,24 @@ def delete_business(id):
     else:
         return make_response(jsonify({"Error": "Invalide business id"}), 404)
 
-# sub-document collection (reviews) by id
+# sub-document collection (reviews) by business id
 
 
 @app.route("/api/v1.0/businesses/<string:id>/reviews", methods=["GET"])
 def fetch_all_reviews(id):
     if id in businesses:
-        return make_response(jsonify(businesses[id]['reviews']), 200)
+        page_num, page_size = 1, 2
+        if request.args.get('pn'):
+            page_num = int(request.args.get('pn'))
+        if request.args.get('ps'):
+            page_size = int(request.args.get('ps'))
+        page_start = (page_num - 1) * page_size
+        reviewList = [{k: v} for k, v in businesses[id]['reviews']]
+        list2return = reviewList[page_start: page_start + page_size]
+        return make_response(jsonify(list2return), 200)
     else:
         return make_response(jsonify({"Error": "Invalide business id"}), 404)
-    
+
 
 # create review
 
@@ -101,7 +117,7 @@ def add_new_review(b_id):
         business = businesses[b_id]
         if 'username' in request.form and 'comment' in request.form and 'stars' in request.form:
             if len(business['reviews']) == 0:
-                        new_review_id = 1
+                new_review_id = 1
             else:
                 new_review = business['reviews'][-1]['id'] + 1
             new_review = {
@@ -160,6 +176,7 @@ def delete_one_review(b_id, r_id):
         return make_response(jsonify({"Error": "Invalide review id"}), 404)
     else:
         return make_response(jsonify({"Error": "Invalide business id"}), 404)
+
 
 if __name__ == "__main__":
     businesses = MyUtils.utils.generate_dummy_daty(100)
