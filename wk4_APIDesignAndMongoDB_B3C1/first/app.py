@@ -20,7 +20,17 @@ def index():
 
 @app.route("/api/v1.0/businesses", methods=["GET"])
 def show_all_businesses():
-    return make_response(jsonify(businesses), 200)
+    page_num, page_size = 1, 10
+    if request.arg.get('pn'):
+        page_num = int(request.arg.get('pn'))
+    if request.arg.get('ps'):
+        page_size = int(request.arg.get('ps'))
+    page_start = (page_size * (page_num -1))
+    businesses_list = [
+        {k:v} for k, v in businesses.items()
+        ]
+    data2return = businesses_list[page_start : page_start + page_size]
+    return make_response(jsonify(data2return), 200)
 
 # get one business by id
 
