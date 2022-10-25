@@ -9,6 +9,4 @@ dics = {
     }
 }
 
-dict = dics['111']
-dict['id'] = '333'
-print('111' in dics)
+print(dics.items())
