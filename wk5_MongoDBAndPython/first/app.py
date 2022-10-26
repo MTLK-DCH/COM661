@@ -1,3 +1,4 @@
+import json
 from flask import Flask, jsonify, make_response, request
 from pymongo import MongoClient
 from bson import ObjectId
@@ -23,10 +24,10 @@ def index():
 @app.route("/api/v1.0/businesses", methods=["GET"])
 def show_all_businesses():
     page_num, page_size = 1, 10
-    if request.arg.get('pn'):
-        page_num = int(request.arg.get('pn'))
-    if request.arg.get('ps'):
-        page_size = int(request.arg.get('ps'))
+    if request.args.get('pn'):
+        page_num = int(request.args.get('pn'))
+    if request.args.get('ps'):
+        page_size = int(request.args.get('ps'))
     page_start = (page_size * (page_num -1))
 
     data2return = []
@@ -113,6 +114,52 @@ def delete_business(id):
         return make_response(jsonify({}), 204)
     else:
         return make_response(jsonify({'Error': 'Invalid business id'}))
+
+# sub-document collection (reviews) by business id
+
+
+@app.route("/api/v1.0/businesses/<string:id>/reviews", methods=["GET"])
+def fetch_all_reviews(id):
+    if len(id) == 24 and id.isalnum():
+        business = businesses.find_one({'_id':ObjectId(id)})
+        if business is not None:
+            reviews = []
+            for review in business['reviews']:
+                review['_id'] = str(review['_id'])
+                reviews.append(review)
+            return make_response(jsonify(reviews), 200)
+        else:
+            return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+    else:
+        return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+
+# create review
+
+
+@app.route("/api/v1.0/businesses/<string:b_id>/reviews", methods=['POST'])
+def add_new_review(b_id):
+    new_review = {
+                '_id': ObjectId(),
+                'username': request.form['username'],
+                'comment': request.form['comment'],
+                'stars': request.form['stars']
+            }
+    if  len(b_id) == 24 and b_id.isalnum():
+        result = businesses.update_one(
+            {'_id': ObjectId(b_id)}, 
+            {'$push': {'reviews': new_review}}
+        )
+
+        if result.matched_count == 1:
+            reviewlink = "http://localhost:5000/api/v1.0/businesses/" + b_id + "/review/" + str(new_review['_id'])
+            return make_response(jsonify({'url': reviewlink}), 201)
+        else:
+            return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+    else:
+        return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
