@@ -158,8 +158,79 @@ def add_new_review(b_id):
     else:
         return make_response(jsonify({'Error': 'Invalid business id'}), 404)
 
+# fetch one review
 
 
+@app.route("/api/v1.0/businesses/<string:b_id>/reviews/<string:r_id>", methods=['GET'])
+def fetch_one_review(b_id, r_id):
+    if len(b_id) == 24 and b_id.isalnum():
+        if len(r_id) == 24 and r_id.isalnum():
+            business = businesses.find_one(
+                {'reviews._id':ObjectId(r_id)},
+                {'_id': 0, 'reviews.$': 1})
+            if business is None:
+                business = businesses.find_one({'_id': ObjectId(b_id)})
+                if business is None:
+                    return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+                return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+            business['reviews'][0]['_id'] = str(business['reviews'][0]['_id'])
+            return make_response(jsonify(business['reviews'][0]), 200)
+        else: return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+    else:
+        return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+
+# edit a review
+
+
+@app.route("/api/v1.0/businesses/<string:b_id>/reviews/<string:r_id>", methods=['PUT'])
+def edit_one_review(b_id, r_id):        
+    if len(b_id) == 24 and b_id.isalnum():
+        if len(r_id) == 24 and r_id.isalnum():
+            edited_review = {
+                'reviews.$.username': request.form['username'], 
+                'reviews.$.comment': request.form['comment'], 
+                'reviews.$.stars': request.form['stars']
+            }
+            result = businesses.update_one(
+                {
+                    '_id': ObjectId(b_id), 
+                    'reviews._id': ObjectId(r_id)}, 
+                {
+                    '$set': edited_review}
+            )
+            if result.matched_count == 1:
+                edited_review_url = "http://127.0.0.1:5000/api/v1.0/businesses/" + b_id + "/reviews/" + r_id
+                return make_response(jsonify({'url': edited_review_url}, 200))
+            elif result.matched_count != 1 and businesses.find_one({'_id': ObjectId(b_id)}) is None:
+                return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+            else:
+                return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+        else: 
+            return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+    else:
+        return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+
+# delete a review
+
+
+@app.route("/api/v1.0/businesses/<string:b_id>/reviews/<string:r_id>", methods=['DELETE'])
+def delete_one_review(b_id, r_id):
+    if len(b_id) == 24 and b_id.isalnum():
+        if len(r_id) == 24 and r_id.isalnum():
+            result = businesses.update_one(
+                {'_id': ObjectId(b_id)}, 
+                {'$pull':{'reviews': {'_id': ObjectId(r_id)}}}
+            )
+            if result.matched_count == 1:
+                return make_response(jsonify({}, 204))
+            elif result.matched_count != 1 and businesses.find_one({'_id': ObjectId(b_id)}) is None:
+                return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+            else:
+                return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+        else: 
+            return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+    else:
+        return make_response(jsonify({'Error': 'Invalid business id'}), 404)
 
 if __name__ == "__main__":
     app.run(debug=True)
