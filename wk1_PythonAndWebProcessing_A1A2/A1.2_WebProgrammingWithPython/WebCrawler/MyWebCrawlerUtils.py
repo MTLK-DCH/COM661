@@ -20,7 +20,6 @@ def get_all_new_links_on_page(page, prev_links):
                     url = url[:-1]
                 if url not in links and url not in prev_links:
                     links.append(url)
-                    print(url)
             # search the end of attribute
             close_tag = html.find("</a>", tag_start)
             pos = close_tag + 1
