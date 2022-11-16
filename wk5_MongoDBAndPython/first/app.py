@@ -70,8 +70,9 @@ def add_business():
             "rating": request.form["rating"],
             "reviews": []
         }
-        new_business_id = businesses.insert_one(new_business)
-        new_business_link = "http://localhost:5000/api/v1.0/businesses/" + str(new_business_id.inserted_id)
+        result = businesses.insert_one(new_business)
+        new_business_id = result.inserted_id
+        new_business_link = "http://localhost:5000/api/v1.0/businesses/" + str(new_business_id)
         return make_response(jsonify(new_business_link), 201)
     else:
         return make_response(jsonify({"Error": "Missing form data"}), 404)
@@ -85,16 +86,12 @@ def edit_business(id):
         and 'town' in request.form \
         and 'rating' in request.form:
         result = businesses.update_one(
-            {
-                '_id': ObjectId(id)
-            }, 
-            {
-                "$set": {
+            {'_id': ObjectId(id)}, 
+            {"$set": {
                     'name': request.form["name"], 
                     'town': request.form["town"], 
                     'rating': request.form["rating"]
-                }
-            }
+                }}
         )
         if result.matched_count == 1:
             edied_business_link = "http://localhost:5000/api/v1.0/businesses/" + id
@@ -167,15 +164,15 @@ def fetch_one_review(b_id, r_id):
         if len(r_id) == 24 and r_id.isalnum():
             business = businesses.find_one(
                 {'reviews._id':ObjectId(r_id)},
-                {'_id': 0, 'reviews.$': 1})
-            if business is None:
-                business = businesses.find_one({'_id': ObjectId(b_id)})
-                if business is None:
-                    return make_response(jsonify({'Error': 'Invalid business id'}), 404)
+                {'reviews.$': 1})
+            if business == None:
                 return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+            if str(business['_id']) != b_id:
+                return make_response(jsonify({'Error': 'Invalid business id'}), 404)
             business['reviews'][0]['_id'] = str(business['reviews'][0]['_id'])
             return make_response(jsonify(business['reviews'][0]), 200)
-        else: return make_response(jsonify({'Error': 'Invalid review id'}), 404)
+        else: 
+            return make_response(jsonify({'Error': 'Invalid review id'}), 404)
     else:
         return make_response(jsonify({'Error': 'Invalid business id'}), 404)
 
