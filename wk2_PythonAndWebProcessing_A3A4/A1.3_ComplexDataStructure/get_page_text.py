@@ -1,6 +1,6 @@
 import urllib.request
 
-response = urllib.request.urlopen('http://www.ulster.ac.uk/campuses/belfast')
+response = urllib.request.urlopen('http://adrianmoore.net/COM661/scriptTest.html')
 html = str(response.read())
 
 page_text, page_words = "", []
