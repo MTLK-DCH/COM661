@@ -1,0 +1,29 @@
+<h1>
+    Biz Directory
+</h1>
+
+<h2>
+    There are {{ business_list.length }} businesses in the directory
+</h2>
+
+<h2>The first business is {{ business_list[0].name }}</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div *ngFor="let business of business_list">
+                <div class="card text-white bg-primary mb-3" style = "width: 50rem; margin: auto;">
+                    <div class="card-header">
+                        {{ business.name }}
+                    </div>
+                    <div class="card-body">
+                        This business is based in {{ business.city }}
+                    </div>
+                    <div class="card-footer">
+                        {{ business.review_count }}
+                        reviews available
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
