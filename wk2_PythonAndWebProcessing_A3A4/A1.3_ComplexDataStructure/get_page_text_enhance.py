@@ -1,6 +1,6 @@
 import urllib.request
 
-url = 'http://adrianmoore.net/COM661/scriptTest.html'
+# url = "http://www.ulster.ac.uk/campuses/belfast"
 
 def get_page_text(url):
     response = urllib.request.urlopen(url)
@@ -9,11 +9,11 @@ def get_page_text(url):
     page_text, page_words = "", []
     html = html[html.find("<body") + 5 : html.find("</body>")]
 
-    ignorefile = open("ignorelist.txt", "r")
+    ignorefile = open("./ignorelist.txt", "r")
     ignorelist = []
     for line in ignorefile:
         ignorelist.append(line.strip())
-    print(ignorelist)
+    print('ignore lists are:', ignorelist)
 
     finished = False
 
@@ -45,7 +45,7 @@ def get_page_text(url):
 
     return page_words
 
-page_words = get_page_text(url)
+# page_words = get_page_text(url)
     
-print(page_words)
-print("{} unique words found".format(len(page_words)))
+# print(page_words)
+# print("{} unique words found".format(len(page_words)))
